@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            margin:0;
+            background-color: rgb(193, 191, 191);
+            padding:10px;
+        }
+        .container{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            text-align:center;
+            background-color:rgb(255, 255, 255);
+            height:350px;
+            width:350px;
+            border-radius:20px;
+            border-color: black;
+            padding:10px;
+        }
+        .qrcode{
+            position:absolute;
+            right:20vw;
+            margin-top:100px;
+            width:300px;
+            height:350px;
+            background-color:rgb(255, 255, 255);
+            padding:10px;
+            flex-direction:column;
+            align-items:center;
+            border:6px solid rgb(0, 0, 0);
+            border-radius:3px;
+            box-shadow:3px 3px 3px rgb(0,0,0);
+        }
+        input{
+            border-color: rgb(0, 0, 0);
+            margin-bottom:2px;
+            border-radius:6px;
+            border:2px solid rgb(100, 100, 100);
+            outline:none;
+            width:260px;
+            height:30px;
+        }
+        button{
+            padding: 10px 20px;
+            font-size:16px;
+            background-color:rgb(88, 255, 255);
+            color:black;
+            border:none;
+            border: radius 10px;
+            cursor:pointer;
+            transition:backgroung-color 0.3s;
+        }
+        button:hover{
+            background-color:rgb(74, 255, 61);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <input type="text" id="text" placeholder="Enter Text or URL" /><br>
+        <button onclick="generateQRcode()">Generate</button><br>
+        <div id="qrcode">
+
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        function generateQRcode(){
+            const textt = document.getElementById("text").value
+            const qrCodeContainer = document.getElementById("qrcode")
+            qrCodeContainer.innerHTML="";
+            if(textt.trim() !==""){
+                new QRCode(qrCodeContainer,{text:textt,width:100,height:100})
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #container{
+            color:black;
+            text-align:center;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            background-color:rgb(174, 245, 244);
+            height:300px;
+            width:300px;
+            border-radius:20px;
+            border-color: black;
+            padding:10px;
+        }
+        #b{
+            width:100px;
+            height:50px;
+            border-radius:30px;
+            border-color: crimson;
+            font-size:18px;
+            background-color: yellow;
+        }
+        #body{
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            align-items: center;
+            justify-content: center;
+            background-color: rgb(131, 168, 172);
+        }
+        #user{
+            height:200px;
+            /* background-color: crimson; */
+            color:crimson;
+        }
+    </style>
+</head>
+<body id="body">
+    <div id="container">
+        <h1>Random User Generator</h1>
+        <div id="user"></div>
+        <button id="b" onclick="fetchdata()">Get User</button>
+    </div>
+    <script>
+        let userContainer=document.getElementById("user")
+        async function fetchdata() {
+            try{
+                let response=await fetch("https://randomuser.me/api/")
+                let data=await response.json()
+                let userdata=data.results[0]
+                let name=`${userdata.name.title} ${userdata.name.first}`
+                let photo=userdata.picture.medium
+                userContainer.innerHTML=`<img src="${photo}"> <h2>${name}</h2>`
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+    </script>
+</body>
+</html>
