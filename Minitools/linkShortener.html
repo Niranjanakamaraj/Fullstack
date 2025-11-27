@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>URL Shortener</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        background: #0f0f0f;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 400px;
+        background: #1a1a1a;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 0 20px rgba(0,255,100,0.3);
+    }
+    .ip{
+        justify-content:center;
+        align-items: center;
+        display: flex;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 15px;
+        outline: none;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #00ff66;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 15px;
+        background: #222;
+        border-radius: 8px;
+        word-break: break-all;
+    }
+
+    a {
+        color: #00ff66;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<body>
+    <h1>URL Shortener</h1>
+
+    <div class="card">
+        <div class="ip">
+        <input id="urlInput" type="text" placeholder="Enter URL to shorten (include https://)" /></div>
+        <button onclick="shortenURL()">Shorten</button>
+
+        <div id="resultArea" class="result" style="display: none;"></div>
+    </div>
+
+<script>
+    // Redirect if hash exists
+    window.onload = () => {
+        const code = location.hash.slice(1);
+        if (!code) return;
+
+        const urls = JSON.parse(localStorage.getItem("urls") || "{}");
+        if (urls[code]) {
+            window.location.href = urls[code]; // real redirect
+        }
+    };
+
+    function shortenURL() {
+        let longURL = document.getElementById("urlInput").value.trim();
+
+        if (!longURL.startsWith("http://") && !longURL.startsWith("https://")) {
+            alert("Bruh… add https://");
+            return;
+        }
+
+        const code = Math.random().toString(36).substring(2, 8);
+        const urls = JSON.parse(localStorage.getItem("urls") || "{}");
+        urls[code] = longURL;
+        localStorage.setItem("urls", JSON.stringify(urls));
+
+        const shortURL = window.location.href.split("#")[0] + "#" + code;
+
+        document.getElementById("resultArea").style.display = "block";
+        document.getElementById("resultArea").innerHTML =
+            `Short URL: <br><a href="${shortURL}" target="_blank">${shortURL}</a>`;
+    }
+</script>
+
+</body>
+</html>
