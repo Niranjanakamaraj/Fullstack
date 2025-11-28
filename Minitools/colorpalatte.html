@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nested Squares Color Contrast Tester</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body { 
+    color: #333;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  
+  h1 { 
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    color: rgb(0, 0, 0);
+    animation: fadeInDown 0.6s ease-out;
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .controls { 
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    animation: fadeIn 0.6s ease-out 0.2s both;
+  }
+  
+  input[type=color] { 
+    width: 60px;
+    height: 60px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  input[type=color]:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  button { 
+    padding: 14px 24px;
+    cursor: pointer;
+    border: none;
+    color: #fff;
+    border-radius:2rem;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  button:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  #addColor {
+    background: linear-gradient(135deg, #0d1740 0%, #764ba2 100%);
+  }
+  
+  #removeColor {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  
+  #shuffleColors {
+    background: linear-gradient(135deg, #170c1a 0%, #a52bca 100%);
+  }
+  
+  #checkContrast {
+    background: linear-gradient(135deg, #0b2815 0%, #38f9d7 100%);
+  }
+  
+  .colors-container { 
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    animation: fadeIn 0.6s ease-out 0.3s both;
+  }
+  
+  .colors-container > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.4s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .color-code { 
+    font-size: 14px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .color-code:hover { 
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .preview-container { 
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    animation: fadeIn 0.6s ease-out 0.4s both;
+  }
+  
+  .nested-preview { 
+    position: relative;
+    width: 350px;
+    height: 350px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+  
+  .nested-box { 
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .contrast-scores { 
+    text-align: center;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.6s ease-out 0.5s both;
+  }
+  
+  .contrast-scores > div:first-child {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #0d1740 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .score-item { 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+  
+  .score-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+  
+  .score-item > div:last-child {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #667eea;
+    min-width: 60px;
+  }
+  
+  .swatch { 
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .swatch:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+  
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+    
+    .nested-preview {
+      width: 280px;
+      height: 280px;
+    }
+    
+    .controls {
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    button {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>Color Contrast Tester</h1>
+
+<div class="controls">
+  <button id="addColor">+ Add Color</button>
+  <button id="removeColor">- Remove Color</button>
+  <button id="shuffleColors">Shuffle Colors</button>
+  <button id="checkContrast">Check Contrast</button>
+</div>
+
+<div class="preview-container">
+  <div class="nested-preview" id="nestedPreview"></div>
+</div>
+<div class="colors-container" id="colorsContainer"></div>
+<div class="contrast-scores" id="contrastScores"></div>
+<script>
+let colors = ['#3498db','#ffffff']; // default colors
+const colorsContainer = document.getElementById('colorsContainer');
+const nestedPreview = document.getElementById('nestedPreview');
+const contrastScores = document.getElementById('contrastScores');
+
+// Render color pickers
+function renderColorPickers() {
+  colorsContainer.innerHTML = '';
+  colors.forEach((color, i) => {
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = color;
+    input.addEventListener('input', (e)=> {
+      colors[i] = e.target.value;
+      renderPreview();
+    });
+    const code = document.createElement('div');
+    code.className = 'color-code';
+    code.textContent = color;
+    code.addEventListener('click', ()=> {
+      navigator.clipboard.writeText(color);
+      alert(`Copied ${color}`);
+    });
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(input);
+    wrapper.appendChild(code);
+    colorsContainer.appendChild(wrapper);
+  });
+}
+
+// Nested boxes preview
+function renderPreview() {
+  nestedPreview.innerHTML = '';
+  const total = colors.length;
+  const paddingStep = 100 / (total * 2); // equal padding
+  colors.forEach((color, i) => {
+    const box = document.createElement('div');
+    box.className = 'nested-box';
+    const paddingPercent = i * paddingStep;
+    box.style.top = paddingPercent + '%';
+    box.style.left = paddingPercent + '%';
+    box.style.width = (100 - 2*paddingPercent) + '%';
+    box.style.height = (100 - 2*paddingPercent) + '%';
+    box.style.backgroundColor = color;
+    nestedPreview.appendChild(box);
+  });
+}
+
+// Shuffle colors
+document.getElementById('shuffleColors').addEventListener('click', () => {
+  for(let i = colors.length -1; i>0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    [colors[i], colors[j]] = [colors[j], colors[i]];
+  }
+  renderColorPickers();
+  renderPreview();
+});
+
+// Add/Remove color
+document.getElementById('addColor').addEventListener('click', ()=>{
+  if(colors.length < 5) colors.push('#cccccc');
+  renderColorPickers();
+  renderPreview();
+});
+document.getElementById('removeColor').addEventListener('click', ()=>{
+  if(colors.length > 2) colors.pop();
+  renderColorPickers();
+  renderPreview();
+});
+
+// Contrast calculation
+function luminance(hex){
+  let r = parseInt(hex.substr(1,2),16)/255;
+  let g = parseInt(hex.substr(3,2),16)/255;
+  let b = parseInt(hex.substr(5,2),16)/255;
+  return 0.2126*r + 0.7152*g + 0.0722*b;
+}
+function contrastScore(hex1, hex2){
+  let L1 = luminance(hex1), L2 = luminance(hex2);
+  let ratio = (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
+  return Math.round((ratio/21)*100);
+}
+
+// Check all pairwise contrasts
+document.getElementById('checkContrast').addEventListener('click', ()=>{
+  let scoreHTML = '<div>Contrast Score for each pair</div>';
+  for(let i=0;i<colors.length;i++){
+    for(let j=i+1;j<colors.length;j++){
+      const score = contrastScore(colors[i], colors[j]);
+      scoreHTML += `<div class="score-item">
+        <div class="swatch" style="background:${colors[i]}"></div>
+        <div class="swatch" style="background:${colors[j]}"></div>
+        <div>${score}</div>
+      </div>`;
+    }
+  }
+  contrastScores.innerHTML = scoreHTML;
+});
+
+renderColorPickers();
+renderPreview();
+</script>
+
+</body>
+</html>
