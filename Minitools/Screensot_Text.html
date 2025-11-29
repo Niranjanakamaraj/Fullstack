@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OCR Screenshot to Text</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #1e1e2f; color: #f0f0f0; padding: 30px; display:flex; flex-direction:column; align-items:center; }
+  h1 { text-align:center; margin-bottom:30px; font-size:2rem; background: #ffffff; -webkit-background-clip: text; color: transparent; }
+  .container { display:flex; flex-direction:column; align-items:center; width:100%; max-width:900px; gap:20px; }
+  .controls { display:flex; justify-content:center; gap:15px; flex-wrap:wrap; }
+  input[type=file] { display:none; }
+  label.file-btn {
+    display:inline-block;
+    padding:12px 25px;
+    background: linear-gradient(90deg,#43e97b,#38f9d7);
+    color:#000;
+    font-weight:bold;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+  }
+  label.file-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow:0 10px 20px rgba(0,0,0,0.3); }
+  button {
+    padding:12px 25px;
+    cursor:pointer;
+    border:none;
+    background: linear-gradient(90deg,#ff8a00,#e52e71);
+    color:#fff;
+    font-weight:bold;
+    border-radius:8px;
+    transition:0.3s;
+  }
+  button:hover { transform: translateY(-2px) scale(1.02); box-shadow:0 10px 20px rgba(0,0,0,0.3); }
+  #uploadedImage { max-width:90%; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.5); margin-top:15px; }
+  #output {
+    white-space: pre-wrap;
+    padding:20px;
+    background:#2e2e3e;
+    border-radius:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.5);
+    width:90%;
+    min-height:150px;
+    font-size:1rem;
+    overflow-wrap:break-word;
+    margin-top:15px;
+  }
+</style>
+</head>
+<body>
+
+<h1>OCR Screenshot to Text</h1>
+
+<div class="container">
+  <div class="controls">
+    <input type="file" id="imageInput" accept="image/*">
+    <label for="imageInput" class="file-btn">Choose Image</label>
+    <button id="processBtn">Extract Text</button>
+  </div>
+
+  <img id="uploadedImage" src="" alt="Uploaded Image" hidden>
+  <div id="output">Extracted text will appear here...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+<script>
+const imageInput = document.getElementById('imageInput');
+const uploadedImage = document.getElementById('uploadedImage');
+const output = document.getElementById('output');
+const processBtn = document.getElementById('processBtn');
+
+let selectedImage = null;
+
+imageInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      selectedImage = reader.result;
+      uploadedImage.src = selectedImage;
+      uploadedImage.hidden = false;
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+processBtn.addEventListener('click', () => {
+  if(!selectedImage) return alert("Upload an image first!");
+  output.textContent = "Processing OCR…";
+
+  Tesseract.recognize(
+    selectedImage,
+    'eng',
+    { logger: m => console.log(m) }
+  ).then(({ data: { text } }) => {
+    output.textContent = text || "No text detected.";
+  }).catch(err => {
+    output.textContent = "Error: " + err.message;
+  });
+});
+</script>
+
+</body>
+</html>
