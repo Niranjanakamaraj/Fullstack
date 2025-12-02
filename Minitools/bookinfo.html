@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Buddy</title>
+
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background:#f5f7fa;
+    padding: 40px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin:0;
+  }
+  h1 {
+    font-size: 2rem;
+    background: linear-gradient(90deg,#ff8a00,#000053);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 25px;
+  }
+  .box {
+    width:100%;
+    max-width: 500px;
+    display:flex;
+    flex-direction:column;
+    justify-content: flex-start;
+    gap:12px;
+  }
+  input {
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ccc;
+    font-size:1rem;
+  }
+  button {
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,#43e97b,#38f9d7);
+    font-weight:bold;
+    cursor:pointer;
+  }
+  #result {
+    width:100%;
+    max-width:500px;
+    margin-top:25px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+  }
+  .card {
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content: center;
+    gap:15px;
+    min-width:140px;
+    text-align:center;
+  }
+  img.cover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:120px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.15);
+  }
+  .similar-section {
+    margin-top:20px;
+    width: 100vw; /* Full viewport width */
+    padding-left: 20px;
+    box-sizing: border-box;
+  }
+  .similar-section h3 {
+    margin-bottom:10px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .similar-row {
+    display:flex;
+    overflow-x:auto;
+    gap:10px;
+    padding-bottom:5px;
+  }
+  .similar-row::-webkit-scrollbar {
+    height:6px;
+  }
+  .similar-row::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+  .similar-row::-webkit-scrollbar-track {
+    background: #eee;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Book Buddy</h1>
+
+<div class="box">
+  <input type="text" id="bookInput" placeholder="Enter book title...">
+  <button onclick="findBook()">Search</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+async function findBook() {
+  const q = document.getElementById("bookInput").value.trim();
+  const result = document.getElementById("result");
+  result.innerHTML = "";
+
+  if (!q) {
+    result.innerHTML = "<p>Enter a book name first.</p>";
+    return;
+  }
+
+  result.innerHTML = "<p>Fetching book data...</p>";
+
+  try {
+    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=1`);
+    const data = await r.json();
+
+    if (!data.items || data.items.length === 0) {
+      result.innerHTML = "<p>No results found.</p>";
+      return;
+    }
+
+    const book = data.items[0].volumeInfo;
+
+    // Main book info
+    const mainCard = document.createElement("div");
+    mainCard.className = "card";
+    mainCard.innerHTML = `
+      ${book.imageLinks ? `<img class="cover" src="${book.imageLinks.thumbnail}">` : ""}
+      <div><strong>Title:</strong> ${book.title || "N/A"}</div>
+      <div><strong>Authors:</strong> ${book.authors ? book.authors.join(", ") : "Unknown"}</div>
+      <div><strong>Published:</strong> ${book.publishedDate || "Unknown"}</div>
+      <div><strong>Description:</strong> ${book.description || "No description available."}</div>
+    `;
+    result.appendChild(mainCard);
+
+    // Fetch similar books using first category if exists
+    if(book.categories && book.categories.length > 0){
+      const category = book.categories[0];
+      const r2 = await fetch(`https://www.googleapis.com/books/v1/volumes?q=subject:${encodeURIComponent(category)}&maxResults=10`);
+      const similarData = await r2.json();
+      if(similarData.items && similarData.items.length > 0){
+        const simSection = document.createElement("div");
+        simSection.className = "similar-section";
+        simSection.innerHTML = `<h3>Similar Books (Category: ${category})</h3>`;
+
+        const simRow = document.createElement("div");
+        simRow.className = "similar-row";
+
+        similarData.items.forEach((b) => {
+          const info = b.volumeInfo;
+          if(info.title === book.title) return; // skip main book
+          const simCard = document.createElement("div");
+          simCard.className = "card";
+          simCard.innerHTML = `
+            ${info.imageLinks ? `<img class="cover" src="${info.imageLinks.thumbnail}">` : ""}
+            <div><strong>${info.title}</strong></div>
+            <div>${info.authors ? info.authors.join(", ") : "Unknown"}</div>
+          `;
+          simRow.appendChild(simCard);
+        });
+
+        simSection.appendChild(simRow);
+        document.body.appendChild(simSection); // append outside main result for full width
+      }
+    }
+
+  } catch (e) {
+    result.innerHTML = "<p>Something went wrong.</p>";
+    console.error(e);
+  }
+}
+</script>
+
+</body>
+</html>
