@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrendScout</title>
+
+  <style>
+    :root {
+      --bg: #1f1f21;
+      --card-bg: #0b0a0a;
+      --text: #ffffff;
+      --subtext: #ffffff;
+      --primary: #2563eb;
+      --radius: 14px;
+    }
+
+    body {
+  margin: 0;
+  padding: 40px;
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers everything horizontally */
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-align: center; /* Center the heading text */
+}
+
+p.subtitle {
+  color: var(--subtext);
+  font-size: 16px;
+  margin-bottom: 30px;
+  text-align: center; /* Center the subtitle text */
+}
+
+select {
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius);
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+  margin-bottom: 30px;
+  display: block; /* ensures proper centering */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+    .repo {
+      background: var(--card-bg);
+      padding: 24px;
+      margin-bottom: 18px;
+      border-radius: var(--radius);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .repo:hover {
+      transform: translateY(-2px);
+    }
+
+    .repo a {
+      font-size: 18px;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--primary);
+    }
+
+    .repo p {
+      font-size: 15px;
+      margin-top: 8px;
+      color: var(--subtext);
+      line-height: 1.5;
+    }
+
+    .meta {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>TrendScout</h1>
+  <p class="subtitle">Pull real-time trending repositories by language.</p>
+
+  <select id="langSelect">
+    <option value="javascript">JavaScript</option>
+    <option value="python">Python</option>
+    <option value="typescript">TypeScript</option>
+    <option value="go">Go</option>
+    <option value="rust">Rust</option>
+    <option value="java">Java</option>
+  </select>
+
+  <div id="results"></div>
+
+  <script>
+    const langSelect = document.getElementById("langSelect");
+    const results = document.getElementById("results");
+
+    async function fetchTrending(lang) {
+      results.innerHTML = "<p class='subtitle'>Fetching latest repositories...</p>";
+
+      try {
+        const response = await fetch(
+          `https://api.github.com/search/repositories?q=language:${lang}&sort=stars&order=desc&per_page=10`
+        );
+
+        const data = await response.json();
+        renderRepos(data.items);
+      } catch (err) {
+        results.innerHTML = "<p class='subtitle'>Unable to load data at the moment.</p>";
+      }
+    }
+
+    function renderRepos(repos) {
+      results.innerHTML = "";
+      repos.forEach(repo => {
+        results.innerHTML += `
+          <div class="repo">
+            <a href="${repo.html_url}" target="_blank">${repo.full_name}</a>
+            <p>${repo.description || "No description available."}</p>
+            <div class="meta">Stars: ${repo.stargazers_count}</div>
+          </div>
+        `;
+      });
+    }
+
+    fetchTrending(langSelect.value);
+
+    langSelect.addEventListener("change", () => {
+      fetchTrending(langSelect.value);
+    });
+  </script>
+
+</body>
+</html>
