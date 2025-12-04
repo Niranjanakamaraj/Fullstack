@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Peek</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: #1e1e2f;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    background: linear-gradient(90deg,#43e97b,#38f9d7);
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  input, button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    margin: 5px;
+  }
+  button {
+    background: linear-gradient(90deg,#43e97b,#38f9d7);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  table {
+    margin-top: 20px;
+    width: 100%;
+  }
+  th, td {
+    padding: 12px 15px;
+    border-radius: 6px;
+    text-align: center;
+  }
+  th {
+    background: #2e2e44;
+  }
+  tr {
+    background: #2a2a3d;
+    transition: transform 0.2s;
+  }
+  tr:hover {
+    transform: translateY(-2px);
+    background: #3a3a5a;
+  }
+  .green { color: #4dff88; }
+  .red { color: #ff4d4d; }
+  canvas { margin-top: 20px; max-width: 900px; }
+</style>
+</head>
+<body>
+
+<h1>Crypto Peek</h1>
+<input type="text" id="cryptoInput" placeholder="Enter crypto name or symbol...">
+<button onclick="fetchCrypto()">Fetch Info</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>Coin</th>
+      <th>Symbol</th>
+      <th>Price (USD)</th>
+      <th>24h Change</th>
+      <th>Market Cap</th>
+    </tr>
+  </thead>
+  <tbody id="cryptoTableBody"></tbody>
+</table>
+
+<canvas id="sparklineChart"></canvas>
+
+<script>
+const tableBody = document.getElementById("cryptoTableBody");
+const ctx = document.getElementById("sparklineChart").getContext('2d');
+let chart;
+
+async function fetchCrypto() {
+  const name = document.getElementById("cryptoInput").value.trim().toLowerCase();
+  tableBody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+  if(!name) return alert("Enter a cryptocurrency name!");
+
+  try {
+    const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${name}&order=market_cap_desc&per_page=1&page=1&sparkline=true`);
+    const data = await res.json();
+
+    if(!data || data.length === 0){
+      tableBody.innerHTML = "<tr><td colspan='5'>Crypto not found.</td></tr>";
+      if(chart) chart.destroy();
+      return;
+    }
+
+    const coin = data[0];
+    const changeClass = coin.price_change_percentage_24h >= 0 ? 'green' : 'red';
+
+    tableBody.innerHTML = `
+      <tr>
+        <td>${coin.name}</td>
+        <td>${coin.symbol.toUpperCase()}</td>
+        <td>${coin.current_price.toLocaleString()}</td>
+        <td class="${changeClass}">${coin.price_change_percentage_24h.toFixed(2)}%</td>
+        <td>${coin.market_cap.toLocaleString()}</td>
+      </tr>
+    `;
+
+    // Sparkline chart
+    if(chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: coin.sparkline_in_7d.price.map((_, i) => i),
+        datasets: [{
+          label: `${coin.name} 24h price`,
+          data: coin.sparkline_in_7d.price,
+          borderColor: '#43e97b',
+          backgroundColor: 'rgba(67,233,123,0.2)',
+          tension: 0.3,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { display: false },
+          y: { display: true, ticks: { color: '#fff' } }
+        }
+      }
+    });
+
+  } catch(e) {
+    tableBody.innerHTML = "<tr><td colspan='5'>Error fetching data.</td></tr>";
+    if(chart) chart.destroy();
+    console.error(e);
+  }
+}
+</script>
+
+</body>
+</html>
