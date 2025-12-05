@@ -1,0 +1,178 @@
+/* styles.css */
+
+/* General Styling */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: url('https://1.bp.blogspot.com/-UxKmyZmLl28/WLMjJ2xQKuI/AAAAAAAAPBQ/gbpJ-SK026cDV8_XzSbLnXDPjWmpfQW5wCLcB/s1600/challenge.png') no-repeat center center fixed;
+  background-size: 100px 100px; /* Sets the background image size to 100px by 100px */
+  background-size: 60% 60%; /* Sets the background image size to 50% of the container's width and height */
+  background-position: bottom ;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Splash Screen */
+.splash-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #84fab0, #8fd3f4);
+  color: white;
+  text-align: center;
+  animation: fadeOut 3s forwards, bounceIn 1.5s;
+}
+
+.splash-screen h1 {
+  font-size: 4rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 3px 3px 20px rgba(0, 0, 0, 0.4);
+}
+
+.splash-screen h3 {
+  font-size: 2rem;
+  font-weight: 300;
+  text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.3);
+}
+.mb-3{
+  resize:none;
+}
+
+/* Animations */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Form and Container Styling */
+.container {
+  margin-top: 30px;
+  animation: fadeIn 1s ease-in;
+}
+
+form {
+  padding: 25px;
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  color: #fff;
+}
+
+form .form-label {
+  font-weight: 600;
+}
+
+button {
+  border-radius: 25px;
+  background: linear-gradient(45deg, #ff6a00, #ee0979);
+  color: white;
+  border: none;
+  transition: transform 0.3s, background 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(45deg, #ee0979, #ff6a00);
+}
+.form-control{
+  resize: :none;
+}
+/* Challenge Details Section */
+#challenge-details p {
+  font-size: 1.2rem;
+  align-items: center;
+}
+
+#challenge-details .btn {
+  font-size: 1rem;
+  padding: 12px;
+}
+
+/* Daily Task Tracker Section */
+#daily-task-tracker .form-check-label {
+  font-size: 1.1rem;
+  margin-left: 0.5rem;
+}
+
+#daily-task-tracker textarea {
+  resize: none;
+}
+
+/* Dashboard */
+.card {
+  align-items:center;
+  margin: 20px 0;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #84fab0, #8fd3f4);
+  color: white;
+  padding:10px;
+}
+
+.card-body {
+  align-items: center;
+  border-radius: 15px;
+  width:fit-content;
+}
+
+.card-title {
+
+  font-size: 3.8rem;
+  margin-bottom: 1rem;
+  color:rgb(222, 18, 18);
+}
+
+.list-group {
+  margin-top: 1rem;
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 15px;
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+}
+
+/* Additional Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
