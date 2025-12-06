@@ -3,14 +3,11 @@
 /* General Styling */
 body {
   font-family: 'Poppins', sans-serif;
-  background: url('https://1.bp.blogspot.com/-UxKmyZmLl28/WLMjJ2xQKuI/AAAAAAAAPBQ/gbpJ-SK026cDV8_XzSbLnXDPjWmpfQW5wCLcB/s1600/challenge.png') no-repeat center center fixed;
-  background-size: 100px 100px; /* Sets the background image size to 100px by 100px */
-  background-size: 60% 60%; /* Sets the background image size to 50% of the container's width and height */
-  background-position: bottom ;
   color: #333;
   margin: 0;
   padding: 0;
 }
+
 
 /* Splash Screen */
 .splash-screen {
@@ -69,11 +66,11 @@ body {
   margin-top: 30px;
   animation: fadeIn 1s ease-in;
 }
-
 form {
   padding: 25px;
   background: linear-gradient(135deg, #f6d365, #fda085);
   border-radius: 15px;
+  font-size: large;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   color: #fff;
 }
@@ -95,8 +92,17 @@ button:hover {
   background: linear-gradient(45deg, #ee0979, #ff6a00);
 }
 .form-control{
-  resize: :none;
+  resize: none;
 }
+
+.container{
+color:#000;
+}
+
+.mb-3{
+  color: #000;
+}
+
 /* Challenge Details Section */
 #challenge-details p {
   font-size: 1.2rem;
@@ -126,7 +132,7 @@ button:hover {
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   background: linear-gradient(135deg, #84fab0, #8fd3f4);
-  color: white;
+  color: rgb(0, 0, 0);
   padding:10px;
 }
 
